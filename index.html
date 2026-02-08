@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium To-Do App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google AdSense / AdMob Integration -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+    <script>
+        // AdMob/AdSense Configuration
+        window.adConfig = {
+            // Replace with your actual AdSense/AdMob Publisher ID
+            publisherId: 'ca-pub-XXXXXXXXXXXXXXXX',
+            // Ad Unit IDs (replace with your actual ad unit IDs)
+            adUnits: {
+                banner: 'ca-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+                interstitial: 'ca-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+                rewarded: 'ca-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+                native: 'ca-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX'
+            },
+            // Enable/disable ads
+            enabled: true,
+            // Test mode (set to false for production)
+            testMode: false
+        };
+    </script>
+</head>
+<body>
+    <!-- Mood Selector -->
+    <div class="mood-selector">
+        <button class="mood-btn" data-mood="happy">😄</button>
+        <button class="mood-btn" data-mood="normal">😐</button>
+        <button class="mood-btn" data-mood="tired">😫</button>
+        <button class="mood-btn" data-mood="angry">😡</button>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <!-- Personality Mode Toggle -->
+        <div class="personality-toggle">
+            <button class="personality-btn active" data-personality="buddy">😊 Friendly Buddy</button>
+            <button class="personality-btn" data-personality="boss">👔 Strict Boss</button>
+        </div>
+
+        <!-- Layout Selector -->
+        <div class="layout-selector">
+            <button class="layout-btn active" data-layout="list">📋 List</button>
+            <button class="layout-btn" data-layout="magnet">🧲 Magnet</button>
+            <button class="layout-btn" data-layout="focus">🎯 Focus</button>
+            <button class="layout-btn" data-layout="memory">🧾 Memory</button>
+            <button class="layout-btn" data-layout="wheel">⚙️ Wheel</button>
+            <button class="layout-btn" data-layout="puzzle">🧩 Puzzle</button>
+            <button class="layout-btn" data-layout="story">📜 Story</button>
+            <button class="layout-btn" data-layout="iceberg">🧊 Iceberg</button>
+            <button class="layout-btn" data-layout="packing">📦 Packing</button>
+        </div>
+
+        <!-- Brain Load Meter -->
+        <div class="brain-load-container">
+            <div class="brain-load-meter">
+                <div class="brain-icon">🧠</div>
+                <div class="brain-bar">
+                    <div class="brain-fill" id="brainFill"></div>
+                </div>
+                <div class="brain-label" id="brainLabel">Mental Load: Low</div>
+            </div>
+        </div>
+
+        <!-- Greeting Banner -->
+        <div class="greeting-banner">
+            <div class="greeting-content">
+                <h1 class="greeting-text">Hello, <span id="userName">User</span>! 👋</h1>
+                <p class="motivational-quote" id="motivationalQuote">"The way to get started is to quit talking and begin doing."</p>
+                <div class="date-time">
+                    <span id="currentDate"></span>
+                    <span id="currentTime"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reward Jar -->
+        <div class="reward-jar-container">
+            <div class="reward-jar">
+                <div class="jar-glass">
+                    <div class="jar-fill" id="jarFill"></div>
+                    <div class="jar-coins" id="jarCoins"></div>
+                </div>
+                <div class="jar-label">Reward Jar</div>
+                <div class="jar-progress" id="jarProgress">0/5</div>
+            </div>
+        </div>
+
+        <!-- Today Tasks Section - List View -->
+        <div id="listView" class="tasks-container view-active">
+            <h2 class="section-title">Today's Tasks</h2>
+            <div id="tasksList" class="tasks-list">
+                <!-- Tasks will be dynamically added here -->
+            </div>
+            
+            <!-- Native Banner Ad -->
+            <div id="nativeBannerAd" class="native-banner-ad ad-hidden">
+                <span class="ad-label">Ad</span>
+                <!-- AdSense Banner Ad -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="XXXXXXXXXX"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+
+        <!-- Magnet Board View -->
+        <div id="magnetView" class="magnet-board view-hidden">
+            <div id="magnetBoard" class="magnet-surface">
+                <!-- Magnet tasks will be added here -->
+            </div>
+        </div>
+
+        <!-- Focus Mode View -->
+        <div id="focusView" class="focus-mode view-hidden">
+            <div class="focus-task-card" id="focusTaskCard">
+                <div class="focus-progress-ring">
+                    <svg class="progress-ring" width="200" height="200">
+                        <circle class="progress-ring-circle" cx="100" cy="100" r="90"></circle>
+                    </svg>
+                </div>
+                <div class="focus-task-content">
+                    <h2 id="focusTaskTitle">No tasks</h2>
+                    <p id="focusTaskDesc"></p>
+                    <div class="focus-actions">
+                        <button class="focus-btn skip" id="focusSkip">← Skip</button>
+                        <button class="focus-btn done" id="focusDone">Done →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Cards View -->
+        <div id="memoryView" class="memory-cards view-hidden">
+            <div id="memoryStack" class="memory-stack">
+                <!-- Memory cards will be added here -->
+            </div>
+        </div>
+
+        <!-- Task Wheel View -->
+        <div id="wheelView" class="task-wheel view-hidden">
+            <div class="wheel-container">
+                <svg id="taskWheel" class="task-wheel-svg" viewBox="0 0 300 300">
+                    <!-- Wheel segments will be added here -->
+                </svg>
+                <div class="wheel-center">
+                    <div id="wheelTaskCount">0</div>
+                    <div>Tasks</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Puzzle View -->
+        <div id="puzzleView" class="puzzle-board view-hidden">
+            <div id="puzzleBoard" class="puzzle-surface">
+                <!-- Puzzle pieces will be added here -->
+            </div>
+        </div>
+
+        <!-- Story Mode View -->
+        <div id="storyView" class="story-mode view-hidden">
+            <div class="story-book">
+                <div class="story-page" id="storyPage">
+                    <div class="story-chapter" data-chapter="morning">
+                        <h2>Chapter 1: Morning</h2>
+                        <div id="morningTasks" class="story-tasks"></div>
+                    </div>
+                    <div class="story-chapter" data-chapter="work">
+                        <h2>Chapter 2: Work</h2>
+                        <div id="workTasks" class="story-tasks"></div>
+                    </div>
+                    <div class="story-chapter" data-chapter="night">
+                        <h2>Chapter 3: Night</h2>
+                        <div id="nightTasks" class="story-tasks"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Iceberg View -->
+        <div id="icebergView" class="iceberg-view view-hidden">
+            <div class="iceberg-container">
+                <div class="iceberg-visible" id="visibleTasks">
+                    <h3>Visible Tasks</h3>
+                    <!-- Visible tasks here -->
+                </div>
+                <div class="iceberg-hidden" id="hiddenTasks">
+                    <h3>Hidden Stress Tasks</h3>
+                    <!-- Hidden tasks here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Packing Mode View -->
+        <div id="packingView" class="packing-mode view-hidden">
+            <div class="backpack-container">
+                <div class="backpack" id="backpack">
+                    <div class="backpack-capacity" id="backpackCapacity">0/10</div>
+                    <div class="backpack-items" id="backpackItems">
+                        <!-- Packed items here -->
+                    </div>
+                </div>
+                <div class="unpacked-items" id="unpackedItems">
+                    <!-- Unpacked items here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Add Button -->
+        <button class="floating-add-btn" id="addTaskBtn">
+            <span class="plus-icon">+</span>
+            <span class="btn-text">Add Task</span>
+        </button>
+    </div>
+
+    <!-- Add Task Screen -->
+    <div id="addTaskScreen" class="screen">
+        <div class="add-task-container">
+            <div class="screen-header">
+                <button class="back-btn" id="backBtn">← Back</button>
+                <h2>New Task</h2>
+            </div>
+
+            <form id="taskForm" class="task-form">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title</label>
+                    <input type="text" id="taskTitle" placeholder="Enter task title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description (Optional)</label>
+                    <textarea id="taskDescription" placeholder="Add a description..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDate">Date</label>
+                    <input type="date" id="taskDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Energy Level</label>
+                    <div class="energy-slider-container">
+                        <div class="energy-slider">
+                            <div class="energy-track" id="energyTrack">
+                                <div class="energy-fill" id="energyFill"></div>
+                                <div class="energy-handle" id="energyHandle"></div>
+                            </div>
+                            <div class="energy-labels">
+                                <span>🌙 Low</span>
+                                <span>🌞 High</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="energyLevel" value="50">
+                        <input type="time" id="taskTime" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Effort Level (Instead of Priority)</label>
+                    <div class="effort-slider-container">
+                        <div class="effort-slider">
+                            <div class="effort-track" id="effortTrack">
+                                <div class="effort-fill" id="effortFill"></div>
+                                <div class="effort-handle" id="effortHandle"></div>
+                            </div>
+                            <div class="effort-labels">
+                                <span>💪 Low Effort</span>
+                                <span>⚡ High Effort</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="effortLevel" value="50">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Why This Task? (Memory Tag)</label>
+                    <input type="text" id="taskWhy" placeholder="e.g., 'To feel accomplished', 'For my family'">
+                </div>
+
+                <div class="form-group">
+                    <label>Life Bucket</label>
+                    <div class="bucket-selector">
+                        <button type="button" class="bucket-btn" data-bucket="health">🏥 Health</button>
+                        <button type="button" class="bucket-btn" data-bucket="paisa">💰 Paisa</button>
+                        <button type="button" class="bucket-btn" data-bucket="family">👨‍👩‍👧 Family</button>
+                        <button type="button" class="bucket-btn" data-bucket="growth">🌱 Growth</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Task Type</label>
+                    <div class="task-type-selector">
+                        <button type="button" class="type-btn" data-type="quick">⭕ Quick</button>
+                        <button type="button" class="type-btn" data-type="long">▭ Long</button>
+                        <button type="button" class="type-btn" data-type="urgent">▲ Urgent</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Night-Only Task</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="nightOnlyToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Only visible after sunset</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Place Reminder (Optional)</label>
+                    <input type="text" id="placeReminder" placeholder="e.g., Home, Office, Gym">
+                </div>
+
+                <div class="form-group">
+                    <label>Add Image/Emoji</label>
+                    <div class="memory-attach">
+                        <button type="button" class="attach-btn" id="attachEmojiBtn">😊 Emoji</button>
+                        <input type="file" id="attachImage" accept="image/*" style="display: none;">
+                        <button type="button" class="attach-btn" id="attachImageBtn">📷 Image</button>
+                    </div>
+                    <div id="attachedPreview" class="attached-preview"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Priority</label>
+                    <div class="priority-selector">
+                        <button type="button" class="priority-btn" data-priority="high">
+                            <span class="priority-dot high"></span>
+                            High
+                        </button>
+                        <button type="button" class="priority-btn" data-priority="medium">
+                            <span class="priority-dot medium"></span>
+                            Medium
+                        </button>
+                        <button type="button" class="priority-btn" data-priority="low">
+                            <span class="priority-dot low"></span>
+                            Low
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Reminder</label>
+                    <div class="reminder-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="reminderToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">Enable Reminder</span>
+                    </div>
+                    <div class="reminder-options" id="reminderOptions" style="display: none;">
+                        <button type="button" class="reminder-btn" data-minutes="10">10 min before</button>
+                        <button type="button" class="reminder-btn" data-minutes="30">30 min before</button>
+                        <button type="button" class="reminder-btn" data-minutes="60">1 hour before</button>
+                        <button type="button" class="reminder-btn" data-minutes="1440">1 day before</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="save-task-btn">Save Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calendar Screen -->
+    <div id="calendarScreen" class="screen">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="calendar-nav-btn" id="prevMonthBtn">←</button>
+                <h2 id="calendarMonthYear"></h2>
+                <button class="calendar-nav-btn" id="nextMonthBtn">→</button>
+            </div>
+            
+            <div class="calendar-weekdays">
+                <div class="weekday">Sun</div>
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+            </div>
+            
+            <div id="calendarGrid" class="calendar-grid">
+                <!-- Calendar days will be dynamically added here -->
+            </div>
+            
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <span class="legend-dot high"></span>
+                    <span>High Priority</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot medium"></span>
+                    <span>Medium Priority</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot low"></span>
+                    <span>Low Priority</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot completed"></span>
+                    <span>Completed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminders Screen -->
+    <div id="remindersScreen" class="screen">
+        <div class="screen-content">
+            <h2>Reminders</h2>
+            <div id="remindersList" class="reminders-list">
+                <!-- Reminders will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Screen -->
+    <div id="profileScreen" class="screen">
+        <div class="screen-content">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <span id="profileInitial">U</span>
+                </div>
+                <h2 id="profileName">User</h2>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingTasks">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            
+            <!-- Habit Plants -->
+            <div class="habits-section">
+                <h3>Your Habits 🌱</h3>
+                <div id="habitPlants" class="habit-plants">
+                    <!-- Habit plants will be added here -->
+                </div>
+            </div>
+
+            <!-- Streak Protection -->
+            <div class="streak-section">
+                <div class="streak-display">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-count" id="streakCount">0</div>
+                    <div class="streak-label">Day Streak</div>
+                </div>
+                <div class="streak-shield" id="streakShield" style="display: none;">
+                    <div class="shield-icon">🛡️</div>
+                    <div class="shield-message">Zero-day protection active!</div>
+                </div>
+            </div>
+
+            <!-- Life Buckets -->
+            <div class="buckets-section">
+                <h3>Life Buckets</h3>
+                <div id="lifeBuckets" class="life-buckets">
+                    <div class="bucket-item" data-bucket="health">
+                        <div class="bucket-icon">🏥</div>
+                        <div class="bucket-name">Health</div>
+                        <div class="bucket-fill" id="healthBucket">
+                            <div class="bucket-progress" style="height: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="bucket-item" data-bucket="paisa">
+                        <div class="bucket-icon">💰</div>
+                        <div class="bucket-name">Paisa</div>
+                        <div class="bucket-fill" id="paisaBucket">
+                            <div class="bucket-progress" style="height: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="bucket-item" data-bucket="family">
+                        <div class="bucket-icon">👨‍👩‍👧</div>
+                        <div class="bucket-name">Family</div>
+                        <div class="bucket-fill" id="familyBucket">
+                            <div class="bucket-progress" style="height: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="bucket-item" data-bucket="growth">
+                        <div class="bucket-icon">🌱</div>
+                        <div class="bucket-name">Growth</div>
+                        <div class="bucket-fill" id="growthBucket">
+                            <div class="bucket-progress" style="height: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Life Receipt -->
+            <div class="receipt-section">
+                <button class="receipt-btn" id="generateReceiptBtn">📄 Generate Today's Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-screen="homeScreen">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item" data-screen="calendarScreen">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">Calendar</span>
+        </button>
+        <button class="nav-item" data-screen="remindersScreen">
+            <span class="nav-icon">🔔</span>
+            <span class="nav-label">Reminders</span>
+        </button>
+        <button class="nav-item" data-screen="profileScreen">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Profile</span>
+        </button>
+    </nav>
+
+    <!-- Task Menu Modal -->
+    <div id="taskMenuModal" class="modal">
+        <div class="modal-content">
+            <button class="menu-item" id="editTaskBtn">✏️ Edit</button>
+            <button class="menu-item" id="deleteTaskBtn">🗑️ Delete</button>
+            <button class="menu-item" id="shareTaskBtn">📤 Share</button>
+            <button class="menu-item" id="closeMenuBtn">✕ Close</button>
+        </div>
+    </div>
+
+    <!-- Date Events Modal -->
+    <div id="dateEventsModal" class="modal">
+        <div class="modal-content date-events-modal">
+            <div class="modal-header">
+                <h3 id="selectedDateTitle"></h3>
+                <button class="close-modal-btn" id="closeDateEventsBtn">✕</button>
+            </div>
+            <div id="dateEventsList" class="date-events-list">
+                <!-- Events for selected date will be shown here -->
+            </div>
+            <button class="add-event-btn" id="addEventFromCalendarBtn">
+                <span>+</span> Add Event/Task
+            </button>
+        </div>
+    </div>
+
+    <!-- Life Receipt Modal -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-content receipt-modal">
+            <div class="receipt" id="lifeReceipt">
+                <div class="receipt-header">
+                    <h2>LIFE RECEIPT</h2>
+                    <div id="receiptDate"></div>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-item">
+                        <span>Tasks Completed</span>
+                        <span id="receiptCompleted">0</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>Energy Spent</span>
+                        <span id="receiptEnergy">0%</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>Time Saved</span>
+                        <span id="receiptTime">0 min</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>Rewards Earned</span>
+                        <span id="receiptRewards">0</span>
+                    </div>
+                </div>
+                <div class="receipt-footer">
+                    <div>Thank you for being productive!</div>
+                    <button class="share-receipt-btn" id="shareReceiptBtn">Share Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Missed Task Modal -->
+    <div id="missedTaskModal" class="modal">
+        <div class="modal-content missed-task-modal">
+            <h3>Task Missed</h3>
+            <p id="missedTaskTitle"></p>
+            <div class="missed-task-options">
+                <button class="missed-btn shift" id="shiftTaskBtn">📅 Shift</button>
+                <button class="missed-btn drop" id="dropTaskBtn">🗑️ Drop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Surprise Reward Modal -->
+    <div id="surpriseModal" class="modal">
+        <div class="modal-content surprise-modal">
+            <div class="mystery-box">🎁</div>
+            <h3>Surprise Reward!</h3>
+            <div id="surpriseContent"></div>
+            <button class="close-surprise-btn" id="closeSurpriseBtn">Awesome!</button>
+        </div>
+    </div>
+
+    <!-- Why Task Thought Bubble -->
+    <div id="whyTaskBubble" class="thought-bubble">
+        <div class="bubble-content" id="whyTaskContent"></div>
+    </div>
+
+    <!-- Focus Aura -->
+    <div id="focusAura" class="focus-aura"></div>
+
+    <!-- Rewarded Ad Popup -->
+    <div id="rewardedAdModal" class="modal ad-modal">
+        <div class="modal-content rewarded-ad-modal">
+            <div class="rewarded-ad-header">
+                <h3>Unlock Premium Feature</h3>
+            </div>
+            <div class="rewarded-ad-body">
+                <div class="rewarded-ad-icon">🎁</div>
+                <p class="rewarded-ad-message">Watch a short ad to unlock premium feature for 24 hours</p>
+                <div class="rewarded-ad-feature" id="rewardedAdFeature">Extra Reminders</div>
+            </div>
+            <div class="rewarded-ad-actions">
+                <button class="rewarded-ad-btn watch" id="watchAdBtn">Watch Ad</button>
+                <button class="rewarded-ad-btn cancel" id="cancelRewardedAdBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interstitial Ad Screen -->
+    <div id="interstitialAd" class="interstitial-ad ad-hidden">
+        <div class="interstitial-content">
+            <div class="interstitial-header">
+                <button class="interstitial-skip" id="interstitialSkip">
+                    Skip <span id="skipCountdown">5</span>
+                </button>
+            </div>
+            <div class="interstitial-body">
+                <!-- AdSense Interstitial Ad -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="XXXXXXXXXX"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
